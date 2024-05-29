@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Uploader</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/loading-io/3.0.0/css/loading-io.min.css">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <!-- <img src="https://www.freepik.com/icon/technology_15666361#fromView=keyword&page=1&position=11&uuid=32edd7ea-f2e1-4f71-9a46-5c99a4ae70f0" alt="App Logo"> -->
+      <h3>DeepT | Video translator and summarizer</h3>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1 class="start">Let's Start</h1>
+  </div>
+
+  <form method="post">
+    <div class="input-group">
+      <label for="video-url">Enter Video URL:</label>
+      <input type="text" id="video-url" name="video_url" placeholder="Enter video URL">
+      <button type="submit">Confirm</button>
+    </div>
+  </form>
+
+  <div class="video-container">
+    {% if video_url %}
+    <iframe src="https://www.youtube.com/embed/{{ video_url }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    {% endif %}
+  </div>
+  {% if video_url %}
+  <div class="info-section">
+    <div class="info-box">
+      <h3>Source text - In English</h3>
+      <textarea> {{ source_text }} </textarea>
+    </div>
+    <div class="info-box">
+      <h3>Translated text - In Russian</h3>
+      <textarea>{{ translated_text }}</textarea>
+    </div>
+    
+    <div class="full-width-box">
+      <h3>In summary</h3>
+      <textarea>{{ summary }}</textarea>
+    </div>
+  </div>
+  {% endif %}
+  
+</body>
+</html>
