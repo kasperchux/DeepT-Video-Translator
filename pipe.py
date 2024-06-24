@@ -14,7 +14,7 @@ import soundfile as sf
 from math import floor
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, AudioFileClip
 
-def get_subtitles(stt, translation, size_chunks: int =4000) -> list<dict>:
+def get_subtitles(stt, translation, size_chunks: int =4000):
     subtitles = [] # Create empty list for subtitles
     chunks = F.split_into_chunks(size=size_chunks) # Split the audio into chunks
     size_chunks /= 1000 # Divide size into 1000, to get the seconds from milliseconds
@@ -47,8 +47,9 @@ def concatenate_audio(folder_path: str ="temp_audios", remove: bool = False) -> 
     combined_audio.export("translated_video.mp3", format="mp3") # Export it
     if remove:
         print("Removing temporary files...")
+        # os.remove(folder_path)
 
-def prepare_video(subtitles: list<dict>, source_video_path: str, output_video_path: str ="translated_video.mp4") -> None:
+def prepare_video(subtitles, source_video_path: str, output_video_path: str ="translated_video.mp4") -> None:
     video = VideoFileClip(source_video_path)
     # Create empty CompositeVideoClip, to add subtitles in it
     video_with_subtitles = CompositeVideoClip([video])
@@ -62,7 +63,7 @@ def prepare_video(subtitles: list<dict>, source_video_path: str, output_video_pa
         len_text = len(text)
         counter = 0
         for i in range(len_text): # Split the text into rows, if it is very long
-            if counter >= 22 and text[i] == " ": # If num characters in current row more than 22,
+            if counter >= 22 and text[i] == " ": # If num characters in current row more than 22 ,
                 counter = 0                      # and if the last word in that sentence ended up
                 text = text[:i] + "\n" + text[i:] # We add '\n', to move to the next line
             else:
