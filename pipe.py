@@ -13,6 +13,7 @@ import scipy
 import soundfile as sf
 from math import floor
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, AudioFileClip
+import librosa
 
 def get_subtitles(stt, translation, size_chunks: int =4000):
     subtitles = [] # Create empty list for subtitles
@@ -37,7 +38,6 @@ def get_subtitles(stt, translation, size_chunks: int =4000):
 def concatenate_audio(folder_path: str ="temp_audios", remove: bool = False) -> None:
     files = os.listdir(folder_path) # Get all files from the temporary folder
     audio_files = [f for f in files if f.endswith(".wav") or f.endswith(".mp3")] # Take only audio files with .wav and .mp3 extensions
-
     combined_audio = AudioSegment.silent(duration=0) # Empty object
 
     for file in audio_files: # Take each file
@@ -83,27 +83,42 @@ def prepare_video(subtitles, source_video_path: str, output_video_path: str ="tr
     # Save the video with subtitles
     video_with_audio.write_videofile(output_video_path)
 
+def get_num_of_words_in_sentence(sentence: str) -> int:
+
+    length = len(sentence.split(" "))
+
+    return length if length > 8 else 8
+
 def prepare_audio(subtitles, tts, size_chunks=4000) -> None:
     os.makedirs("temp_audios", exist_ok=True) #Create folder for temporary files
     for i, subtitle in enumerate(subtitles): # For each subtitle in subtitles
         sentence = subtitle["translation"] # Take a translated sentence
-        cur_path = os.path.join("temp_audios", f"temp{i}.mp3") # Create path for it
+        cur_path = os.path.join("temp_audios", f"temp{i}.wav") # Create path for it
         audio = tts.generate(sentence=sentence, path=cur_path, save=True) # Generate audio
+        n_words = get_num_of_words_in_sentence(sentence)
+        # 4 / 1 = n_words / speed, speed = 4/n_words
+        speed = 8 / n_words
+        new_audio, sample_rate = librosa.load(cur_path)
+        audio_speedup = librosa.effects.time_stretch(new_audio, rate=1/speed)
+        sf.write(cur_path, audio_speedup, sample_rate)
         audio = audio.numpy().astype("int16") # Preprocess
-        duration = len(audio) # Get it's duration
-        if duration < (size_chunks / 1000): # If it less than size of one chunk
-            length_of_silence = int(((size_chunks/1000) - duration)) # Compute length of silence
-            silence = np.zeros(length_of_silence, dtype=np.int16) # Create an array of silence
-            silence = AudioSegment(silence.tobytes(), # Audio segment
-                                            frame_rate=tts.model.config.sampling_rate,
-                                            sample_width=2,
-                                            channels=1)
-            cur_temp_path = os.path.join("temp_audios", f"temp{i}s.wav") # Create path for silence
-            try: # Save silence as a audio file
-                scipy.io.wavfile.write(cur_temp_path, rate=tts.model.config.sampling_rate,
-                                   data=np.array(silence.get_array_of_samples()).astype(np.int16))
-            except:
-                print("Error!")
+        if subtitle != subtitles[-1]:
+            duration = len(audio)  # Get it's duration
+            if duration < (size_chunks / 1000): # If it less than size of one chunk
+                length_of_silence = int(((size_chunks/1000) - duration)) # Compute length of silence
+                silence = np.zeros(length_of_silence, dtype=np.int16) # Create an array of silence
+                silence = AudioSegment(silence.tobytes(), # Audio segment
+                                                frame_rate=tts.model.config.sampling_rate,
+                                                sample_width=2,
+                                                channels=1)
+                cur_temp_path = os.path.join("temp_audios", f"temp{i}s.wav") # Create path for silence
+                try: # Save silence as a audio file
+                    scipy.io.wavfile.write(cur_temp_path, rate=tts.model.config.sampling_rate,
+                                       data=np.array(silence.get_array_of_samples()).astype(np.int16))
+                except:
+                    print("Error!")
+        else:
+            return None
 
 def get_data(link: str): # Main function
     stt = pipeline("automatic-speech-recognition", model="openai/whisper-small") # Initialize SpeechToText
