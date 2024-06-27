@@ -1,1 +1,11 @@
-/venv
+# Ignore virtual environment
+venv/
+
+# Ignore python cache
+__pycache__/
+
+#Ignore temporary audios
+
+temp_audios/
+
+video.mp4
