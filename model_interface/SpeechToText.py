@@ -1,8 +1,6 @@
-import torch
 from transformers import Speech2TextProcessor, Speech2TextForConditionalGeneration
 from transformers import pipeline
-from datasets import load_dataset
-import soundfile as sf
+
 
 
 class SpeechToText():

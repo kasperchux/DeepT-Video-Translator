@@ -1,5 +1,4 @@
 from transformers import MarianMTModel, MarianTokenizer
-
 class Translator():
     def __init__(self, mpath: str, tpath: str):
         # Initialize parameters

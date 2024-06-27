@@ -1,17 +1,12 @@
-import transformers
-from moviepy.video.tools import subtitles
-
+from typing import List, Dict
 from executable import functional as F
 from model_interface import SpeechToText, Summarizer, Translator, TextToSpeech
 from transformers import pipeline
 from pydub import AudioSegment
 import os
-import cv2
-import json
 import numpy as np
 import scipy
 import soundfile as sf
-from math import floor
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, AudioFileClip
 import librosa
 
@@ -47,9 +42,15 @@ def concatenate_audio(folder_path: str ="temp_audios", remove: bool = False) -> 
     combined_audio.export("translated_video.mp3", format="mp3") # Export it
     if remove:
         print("Removing temporary files...")
-        # os.remove(folder_path)
+        for f in audio_files:
+            os.remove(fr'{folder_path}\{f}')
 
-def prepare_video(subtitles, source_video_path: str, output_video_path: str ="translated_video.mp4") -> None:
+def delete_temp() -> None:
+    temp = ["audio.wav", "translated_video.mp3", "temp.wav"]
+    for f in temp:
+        os.remove(f)
+
+def prepare_video(subtitles: List[Dict], source_video_path: str, output_video_path: str ="translated_video.mp4") -> None:
     video = VideoFileClip(source_video_path)
     # Create empty CompositeVideoClip, to add subtitles in it
     video_with_subtitles = CompositeVideoClip([video])
@@ -89,7 +90,7 @@ def get_num_of_words_in_sentence(sentence: str) -> int:
 
     return length if length > 8 else 8
 
-def prepare_audio(subtitles, tts, size_chunks=4000) -> None:
+def prepare_audio(subtitles: List[Dict], tts, size_chunks=4000) -> None:
     os.makedirs("temp_audios", exist_ok=True) #Create folder for temporary files
     for i, subtitle in enumerate(subtitles): # For each subtitle in subtitles
         sentence = subtitle["translation"] # Take a translated sentence
@@ -136,7 +137,7 @@ def get_data(link: str): # Main function
     prepare_audio(subtitles, tts, size_chunks=4000) # Call this function, to make all audios
     concatenate_audio(remove=True) # Concatenate them in one audiofile
     prepare_video(subtitles, source_video_path="video.mp4", output_video_path="frontend\prepared.mp4") # And create video with subtitles and translation
-
+    delete_temp()
     return source, translated, t_summarized
 
 
