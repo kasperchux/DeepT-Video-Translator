@@ -125,11 +125,13 @@ def get_data(link: str): # Main function
     stt = pipeline("automatic-speech-recognition", model="openai/whisper-small") # Initialize SpeechToText
     F.get_audio_from_youtube(link) # Get an audio from YouTube video by it's link
     translation = pipeline("translation", model="Helsinki-NLP/opus-mt-en-ru") # Initialize Translation model
-    summary = Summarizer.Summarizer("kasperchux/Bart-Base-Summarization", "kasperchux/Bart-Base-Summarization") # Initialize Summarizer
-    summary.build() # Prepare it
+    # summary = Summarizer.Summarizer("kasperchux/Bart-Base-Summarization", "kasperchux/Bart-Base-Summarization") # Initialize Summarizer
+    # summary.build() # Prepare it
     source = stt("audio.wav")["text"] # Take full source text from the video
     translated = translation(source)[0]["translation_text"] # Translate it into Russian language
-    summarized = summary.summarize(source) # Summarize it
+    # summarized = summary.summarize(source) # Summarize it
+    summary = pipeline("summarization", "ainize/bart-base-cnn")
+    summarized = summary(source)[0]["summary_text"]
     t_summarized = translation(summarized)[0]["translation_text"] # Translate summary into Russian
     tts = TextToSpeech.TextToSpeech() # Create TextToSpeech model
     tts.build() # Prepare and initialize it
