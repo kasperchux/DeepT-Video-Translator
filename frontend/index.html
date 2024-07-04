@@ -29,8 +29,7 @@
 
   <div class="video-container">
     {% if video_url %}
-    <video width="1100" height="650" controls>
-    <source src="prepared.mp4">
+    <video width="1100" height="650" src="{{ url_for('static', filename='prepared.mp4') }}" controls>
     Your browser does not support the video tag.
     </video>
     {% endif %}
