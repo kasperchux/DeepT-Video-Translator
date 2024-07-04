@@ -43,7 +43,7 @@ After waiting, your page will refresh. Below you will be able to see 3 text fiel
 - Field with translated text, also the whole text of the video, but it's translated to Russian language
 - Main idea field, summary. This field contains a brief description of the video, its main idea
 
-But that is not all. Also in the folder called 'frontend' you can find a video that has subtitles, as well as a new voiceover of the translated text
+But that is not all. Also in the video vidget you can find a video that has subtitles, as well as a new voiceover of the translated text
 
 
 ![Video](photo_for_readme/video.png)
