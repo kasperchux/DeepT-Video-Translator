@@ -2,7 +2,7 @@ datasets==2.20.0
 Flask==3.0.3
 librosa==0.10.2.post1
 moviepy==1.0.3
-numpy==2.0.0
+numpy==1.26.4
 opencv_contrib_python==4.9.0.80
 opencv_python==4.9.0.80
 pydub==0.25.1
