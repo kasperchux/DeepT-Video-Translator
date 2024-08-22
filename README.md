@@ -10,9 +10,7 @@ Intelligent Summarization: Through analysis and synthesis of information, DeepT 
 - [@kasperchux](https://www.github.com/kasperchux)
 
 
-## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
 
 # Installation
 - Download Docker from https://www.docker.com/get-started/
